@@ -15,7 +15,7 @@ namespace Scp012
         public override PluginPriority Priority => PluginPriority.Medium;
 
         public override string Author => "Michal78900";
-        public override Version Version => new Version(1, 1, 0);
+        public override Version Version => new Version(1, 2, 0);
         public override Version RequiredExiledVersion => new Version(2, 1, 30);
 
 
@@ -34,6 +34,7 @@ namespace Scp012
 
             PlayerEvent.PickingUpItem += handler.OnItemPickup;
             PlayerEvent.DroppingItem += handler.OnItemDrop;
+            PlayerEvent.Hurting += handler.OnHurting;
 
             MapEvent.AnnouncingScpTermination += handler.OnAnnouncingScpTermination;
         }
@@ -47,6 +48,7 @@ namespace Scp012
 
             PlayerEvent.PickingUpItem -= handler.OnItemPickup;
             PlayerEvent.DroppingItem -= handler.OnItemDrop;
+            PlayerEvent.Hurting -= handler.OnHurting;
 
             MapEvent.AnnouncingScpTermination -= handler.OnAnnouncingScpTermination;
 

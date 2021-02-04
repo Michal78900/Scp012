@@ -12,12 +12,18 @@ namespace Scp012
         [Description("Should debug messages be shown?")]
         public bool ShowDebugMessages { get; set; } = false;
 
-        
+
         [Description("How strongly the SCP-012 will attract plyaers to itself?")]
         public float AttractionForce { get; set; } = 0.1f;
 
         [Description("If distance between a player and SCP-012 is less then this number, the Bad Compostion will start attracting a player:")]
         public float AffectDistance { get; set; } = 7.5f;
+
+        [Description("Should blood decals be spawnd underneath a player?")]
+        public bool SpawnBlood { get; set; } = true;
+
+        [Description("Should SCP-012 should be respawned if it is too far from proper position? (SCP-012 can be moved by using grenades)")]
+        public bool AllowItemRepsawn { get; set; } = false;
 
         [Description("List of effects given to player, when ther are in AffectDistance to SCP-012:")]
         public List<string> AffectEffects { get; set; } = new List<string>()
@@ -37,8 +43,21 @@ namespace Scp012
         [Description("List of effects given to player, when they begin to die because of SCP-012:")]
         public List<string> DyingEffects { get; set; } = new List<string>()
         {
-            "Amnesia",
+            "Bleeding",
         };
+        [Description("Should damage-dealing effects hurt affected player?")]
+        public bool EffectsDamage { get; set; } = false;
+
+        [Description("List of items which may be spawned insied SCP-012 to bait player to come closer:")]
+        public List<ItemType> BaitItems { get; set; } = new List<ItemType>
+        {
+            ItemType.Medkit,
+        };
+
+        [Description("How many bait items should be spawned?")]
+        public uint BaitItemsNumber { get; set; } = 2;
+        [Description("Should bait items that are weapons be fully loaded?")]
+        public bool LoadedBaitWeapons { get; set; } = true;
 
         [Description("Should SCP-012 affect other playable SCPs?")]
         public bool AllowScps { get; set; } = true;
