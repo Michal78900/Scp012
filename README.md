@@ -10,6 +10,10 @@ scp012:
   attraction_force: 0.100000001
   # If distance between a player and SCP-012 is less then this number, the Bad Compostion will start attracting a player:
   affect_distance: 7.5
+  # Should blood decals be spawnd underneath a player?
+  spawn_blood: true
+  # Should SCP-012 should be respawned if it is too far from proper position? (SCP-012 can be moved by using grenades)
+  allow_item_repsawn: false
   # List of effects given to player, when ther are in AffectDistance to SCP-012:
   affect_effects:
   - Disabled
@@ -20,7 +24,16 @@ scp012:
   - Ensnared
   # List of effects given to player, when they begin to die because of SCP-012:
   dying_effects:
-  - Amnesia
+  - Bleeding
+  # Should damage-dealing effects hurt affected player?
+  effects_damage: false
+  # List of items which may be spawned insied SCP-012 to bait player to come closer:
+  bait_items:
+  - Medkit
+  # How many bait items should be spawned?
+  bait_items_number: 2
+  # Should bait items that are weapons be fully loaded?
+  loaded_bait_weapons: true
   # Should SCP-012 affect other playable SCPs?
   allow_scps: true
   # SCP termination cassie message: (leave empty to disable)
