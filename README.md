@@ -12,9 +12,9 @@ scp012:
   affect_distance: 7.5
   # Should blood decals be spawnd underneath a player?
   spawn_blood: true
-  # Should SCP-012 should be respawned if it is too far from proper position? (SCP-012 can be moved by using grenades)
-  allow_item_repsawn: false
-  # List of effects given to player, when ther are in AffectDistance to SCP-012:
+  # Should SCP-012 be respawned if it is too far from proper position? (SCP-012 can be moved by using grenades)
+  allow_item_respawn: false
+  # List of effects given to player, when they are in AffectDistance to SCP-012:
   affect_effects:
   - Disabled
   # If distance between a player and SCP-012 is less than this number, the Bad Composition will start killing affected player:
@@ -27,19 +27,20 @@ scp012:
   - Bleeding
   # Should damage-dealing effects hurt affected player?
   effects_damage: false
-  # List of items which may be spawned insied SCP-012 to bait player to come closer:
+  # List of items which may be spawned inside SCP-012 to bait player to come closer: (valid formating: - ItemType: chance)
   bait_items:
-  - Medkit
-  # How many bait items should be spawned?
-  bait_items_number: 2
-  # Should bait items that are weapons be fully loaded?
+  - Medkit: 100
+  # Should bait items that are weapons or ammo be fully loaded?
   loaded_bait_weapons: true
-  # Should SCP-012 affect other playable SCPs?
-  allow_scps: true
+  # List of roles, that will be ignored by SCP-012:
+  ignored_roles:
+  - Scp173
   # SCP termination cassie message: (leave empty to disable)
   cassie_message: '{scp} terminated by SCP 0 1 2'
-  # Should players drop their items, while interacting with SCP-012 (if set to false, after the players dies, they won't drop any items, so they are technically destroyed)
+  # Should players drop their items, while interacting with SCP-012 (if set to false, the items will be deleted)
   drop_items: true
+  # After what time (in seconds) from player death, should bodies near SCP-012 be cleaned up? (set 0 to disable)
+  ragdoll_cleanup_delay: 10
   # Should 012_BOTTOM door close, when someone interacts with SCP-012?
   auto_close_door: true
   # Should 012_BOTTOM door lock, when someone interacts with SCP-012?
