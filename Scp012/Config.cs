@@ -22,10 +22,10 @@ namespace Scp012
         [Description("Should blood decals be spawnd underneath a player?")]
         public bool SpawnBlood { get; set; } = true;
 
-        [Description("Should SCP-012 should be respawned if it is too far from proper position? (SCP-012 can be moved by using grenades)")]
-        public bool AllowItemRepsawn { get; set; } = false;
+        [Description("Should SCP-012 be respawned if it is too far from proper position? (SCP-012 can be moved by using grenades)")]
+        public bool AllowItemRespawn { get; set; } = false;
 
-        [Description("List of effects given to player, when ther are in AffectDistance to SCP-012:")]
+        [Description("List of effects given to player, when they are in AffectDistance to SCP-012:")]
         public List<string> AffectEffects { get; set; } = new List<string>()
         {
             "Disabled",
@@ -48,25 +48,30 @@ namespace Scp012
         [Description("Should damage-dealing effects hurt affected player?")]
         public bool EffectsDamage { get; set; } = false;
 
-        [Description("List of items which may be spawned insied SCP-012 to bait player to come closer:")]
-        public List<ItemType> BaitItems { get; set; } = new List<ItemType>
+        [Description("List of items which may be spawned inside SCP-012 to bait player to come closer: (valid formating: - ItemType: chance)")]
+        public List<Dictionary<string, int>> BaitItems { get; set; } = new List<Dictionary<string, int>>
         {
-            ItemType.Medkit,
+            new Dictionary<string, int> { { "Medkit", 100 } },
         };
 
-        [Description("How many bait items should be spawned?")]
-        public uint BaitItemsNumber { get; set; } = 2;
-        [Description("Should bait items that are weapons be fully loaded?")]
+        [Description("Should bait items that are weapons or ammo be fully loaded?")]
         public bool LoadedBaitWeapons { get; set; } = true;
 
-        [Description("Should SCP-012 affect other playable SCPs?")]
-        public bool AllowScps { get; set; } = true;
+        [Description("List of roles, that will be ignored by SCP-012:")]
+
+        public List<RoleType> IgnoredRoles { get; set; } = new List<RoleType>
+        {
+            RoleType.Scp173
+        };
 
         [Description("SCP termination cassie message: (leave empty to disable)")]
         public string CassieMessage { get; set; } = "{scp} terminated by SCP 0 1 2";
 
-        [Description("Should players drop their items, while interacting with SCP-012 (if set to false, after the players dies, they won't drop any items, so they are technically destroyed)")]
+        [Description("Should players drop their items, while interacting with SCP-012 (if set to false, the items will be deleted)")]
         public bool DropItems { get; set; } = true;
+
+        [Description("After what time (in seconds) from player death, should bodies near SCP-012 be cleaned up? (set 0 to disable)")]
+        public float RagdollCleanupDelay { get; set; } = 10;
 
         [Description("Should 012_BOTTOM door close, when someone interacts with SCP-012?")]
         public bool AutoCloseDoor { get; set; } = true;

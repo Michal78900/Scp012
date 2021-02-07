@@ -38,10 +38,11 @@ namespace Scp012
 
         Vector3 doorPos;
 
+        Pickup Scp012Item;
         Vector3 itemSpawnPos;
         Quaternion itemRotaion;
 
-        Pickup Scp012Item;
+        Vector3 baitItemSpawnPos;
 
 
         public void OnWaitingForPlayers()
@@ -130,32 +131,39 @@ namespace Scp012
         {
             switch (Scp012BottomDoor.transform.rotation.ToString())
             {
-                    //OK
                 case "(0.0, 1.0, 0.0, 0.0)":
                     {
                         itemSpawnPos = new Vector3(doorPos.x - 2f, doorPos.y + 1f, doorPos.z - 8.5f);
                         itemRotaion = new Quaternion(0.1f, 0.1f, 0.1f, -0.1f);
+
+                        baitItemSpawnPos = new Vector3(doorPos.x - 2f, doorPos.y + 1f, doorPos.z - 6.5f);
                         break;
-                    } 
-                    //OK
+                    }
+
                 case "(0.0, 0.0, 0.0, -1.0)":
                     {
                         itemSpawnPos = new Vector3(doorPos.x + 2f, doorPos.y + 1f, doorPos.z + 8.5f);
                         itemRotaion = new Quaternion(-0.05f, 0.1f, 0.1f, 0.1f);
+
+                        baitItemSpawnPos = new Vector3(doorPos.x + 2f, doorPos.y + 1f, doorPos.z + 6.5f);
                         break;
                     }
-                    //OK
+
                 case "(0.0, 0.7, 0.0, -0.7)":
                     {
                         itemSpawnPos = new Vector3(doorPos.x - 8.5f, doorPos.y + 1f, doorPos.z + 2f);
                         itemRotaion = new Quaternion(0.1f, 0.0f, 0.0f, -0.1f);
+
+                        baitItemSpawnPos = new Vector3(doorPos.x - 6.5f, doorPos.y + 1f, doorPos.z + 2f);
                         break;
                     }
-                    //OK
+
                 case "(0.0, 0.7, 0.0, 0.7)":
                     {
                         itemSpawnPos = new Vector3(doorPos.x + 8.5f, doorPos.y + 1f, doorPos.z - 2f);
                         itemRotaion = new Quaternion(0.0f, 1.0f, 1.0f, 0.1f);
+
+                        baitItemSpawnPos = new Vector3(doorPos.x + 6.5f, doorPos.y + 1f, doorPos.z - 2f);
                         break;
                     }
             }
@@ -173,17 +181,29 @@ namespace Scp012
 
             Log.Debug("SCP-012 item spawnned successfully!", plugin.Config.ShowDebugMessages);
 
-            if (plugin.Config.BaitItemsNumber > 0 && plugin.Config.BaitItems.Count > 0)
+
+            for (int i = 0; i < plugin.Config.BaitItems.Count; i++)
             {
-                for (int i = 0; i < plugin.Config.BaitItemsNumber; i++)
+                foreach (KeyValuePair<string, int> baitItem in plugin.Config.BaitItems[i])
                 {
-                    ItemType choosenBaitItem = plugin.Config.BaitItems[rng.Next(0, plugin.Config.BaitItems.Count)];
+                    ItemType item;
+
+                    try
+                    {
+                        item = (ItemType)Enum.Parse(typeof(ItemType), baitItem.Key, true);
+                    }
+                    catch (Exception)
+                    {
+                        Log.Error($"\"{baitItem.Key}\" is not a valid ItemType name");
+                        continue;
+                    }
+
 
                     float durability = 0;
 
                     if (plugin.Config.LoadedBaitWeapons)
                     {
-                        switch (choosenBaitItem)
+                        switch (item)
                         {
                             case ItemType.GunCOM15: durability = 12; break;
                             case ItemType.GunUSP: durability = 18; break;
@@ -193,18 +213,23 @@ namespace Scp012
                             case ItemType.GunLogicer: durability = 75; break;
                             case ItemType.MicroHID: durability = 1; break;
 
+                            case ItemType.Ammo556: durability = 25; break;
+                            case ItemType.Ammo762: durability = 35; break;
+                            case ItemType.Ammo9mm: durability = 15; break;
+
                             default: durability = 0; break;
                         }
                     }
 
-                    Exiled.API.Extensions.Item.Spawn(choosenBaitItem, durability, new Vector3(itemSpawnPos.x + UnityEngine.Random.Range(-4.0f, 4.1f), itemSpawnPos.y, itemSpawnPos.z + UnityEngine.Random.Range(-4.0f, 4.1f)), new Quaternion(
-                                                                                                                                                                                                                               UnityEngine.Random.Range(0.0f, 1.0f),
-                                                                                                                                                                                                                               UnityEngine.Random.Range(0.0f, 1.0f),
-                                                                                                                                                                                                                               UnityEngine.Random.Range(0.0f, 1.0f),
-                                                                                                                                                                                                                               UnityEngine.Random.Range(0.0f, 1.0f)));
-                }
+                    int chance = baitItem.Value;
 
-                Log.Debug("Bait items have been successfully spawned inside of SCP-012 chamber!", plugin.Config.ShowDebugMessages);
+                    if (rng.Next(0, 101) < chance)
+                    {
+                        Exiled.API.Extensions.Item.Spawn(item, durability, new Vector3(baitItemSpawnPos.x + UnityEngine.Random.Range(-6.0f, 6.0f), baitItemSpawnPos.y, baitItemSpawnPos.z + UnityEngine.Random.Range(-6.0f, 6f)), Quaternion.Euler(UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f)));
+
+                        Log.Debug($"{item} bait item has been spawned inside of SCP-012 chamber!", plugin.Config.ShowDebugMessages);
+                    }
+                }
             }
         }
 
@@ -217,9 +242,9 @@ namespace Scp012
 
                 foreach (Player ply in Player.List)
                 {
-                    if (!ply.IsAlive) continue;
+                    if (!ply.IsAlive || ply.IsGodModeEnabled) continue;
 
-                    if (ply.IsScp && !plugin.Config.AllowScps) continue;
+                    if (plugin.Config.IgnoredRoles.Contains(ply.Role)) continue;
 
 
                     if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < plugin.Config.AffectDistance)
@@ -257,7 +282,7 @@ namespace Scp012
                     if (plugin.Config.AutoLockDoor) Scp012BottomDoor.NetworkActiveLocks = 0;
                 }
 
-                if(plugin.Config.AllowItemRepsawn && Vector3.Distance(itemSpawnPos, Scp012Item.Networkposition) > 3f)
+                if (plugin.Config.AllowItemRespawn && Vector3.Distance(itemSpawnPos, Scp012Item.Networkposition) > 3f)
                 {
                     Scp012Item.Delete();
 
@@ -280,9 +305,9 @@ namespace Scp012
 
                 foreach (Player ply in Player.List)
                 {
-                    if (!ply.IsAlive) continue;
+                    if (!ply.IsAlive || ply.IsGodModeEnabled) continue;
 
-                    if (ply.IsScp && !plugin.Config.AllowScps) continue;
+                    if (plugin.Config.IgnoredRoles.Contains(ply.Role)) continue;
 
 
                     if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < plugin.Config.AffectDistance && Vector3.Distance(Scp012Item.Networkposition, ply.Position) > plugin.Config.NoReturnDistance - 0.1f)
@@ -345,23 +370,25 @@ namespace Scp012
                 {
                     if (blood) ply.ReferenceHub.characterClassManager.RpcPlaceBlood(ply.Position, 0, 5f);
 
+                    if (!plugin.Config.DropItems) ply.ClearInventory();
+                    
                     ply.Kill(DamageTypes.Bleeding);
                 }
             });
 
-
-
-            //I have to... I have to finish it...
-
-            //I don't... think... I can do this.
-            //I... I... must... do it.
-
-            //I-I... have... no... ch-choice!
-            //This....this makes...no sense!
-
-            //No... this... this is... impossible!
-            //It can't... It can't be completed!
-
+            if (plugin.Config.RagdollCleanupDelay > 0)
+            {
+                Timing.CallDelayed(20f + plugin.Config.RagdollCleanupDelay, () =>
+                {
+                    foreach (Ragdoll ragdoll in UnityEngine.Object.FindObjectsOfType<Ragdoll>())
+                    {
+                        if (Vector3.Distance(ragdoll.transform.position, Scp012Item.transform.position) < 5f)
+                        {
+                            NetworkServer.Destroy(ragdoll.gameObject);
+                        }
+                    }
+                });
+            }
         }
     }
 }

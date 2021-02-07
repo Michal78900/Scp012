@@ -15,7 +15,7 @@ namespace Scp012
         public override PluginPriority Priority => PluginPriority.Medium;
 
         public override string Author => "Michal78900";
-        public override Version Version => new Version(1, 2, 0);
+        public override Version Version => new Version(1, 3, 0);
         public override Version RequiredExiledVersion => new Version(2, 1, 30);
 
 
