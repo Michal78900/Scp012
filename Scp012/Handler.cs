@@ -52,6 +52,7 @@ namespace Scp012
             Log.Debug($"Door rotation: {Scp012BottomDoor.transform.rotation}", plugin.Config.ShowDebugMessages);
             Log.Debug($"Door position: {doorPos}", plugin.Config.ShowDebugMessages);
 
+
             switch (Scp012BottomDoor.transform.rotation.ToString())
             {
                 case "(0.0, 1.0, 0.0, 0.0)":
@@ -148,11 +149,10 @@ namespace Scp012
 
                 if (!string.IsNullOrEmpty(plugin.Config.CassieMessage))
                 {
-                    StringBuilder message = new StringBuilder();
-                    message.Append(plugin.Config.CassieMessage);
-                    message.Replace("{scp}", $"{RoleToString[ev.Role.roleId]}");
+                    string message = plugin.Config.CassieMessage;
+                    message = message.Replace("{scp}", $"{RoleToString[ev.Role.roleId]}");
 
-                    Cassie.GlitchyMessage(message.ToString(), 0.05f, 0.05f);
+                    Cassie.GlitchyMessage(message, 0.05f, 0.05f);
                 }
             }
         }

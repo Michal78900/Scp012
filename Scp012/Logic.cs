@@ -52,7 +52,7 @@ namespace Scp012
                         }
                     }
 
-                    if (PlayersInteracting.Any() && (plugin.Config.AutoCloseDoor || plugin.Config.AutoLockDoor))
+                    if (PlayersInteracting.Count > 0 && (plugin.Config.AutoCloseDoor || plugin.Config.AutoLockDoor))
                     {
                         if (plugin.Config.AutoCloseDoor) Scp012BottomDoor.NetworkTargetState = false;
                         if (plugin.Config.AutoLockDoor) Scp012BottomDoor.NetworkActiveLocks = 1;
@@ -93,10 +93,7 @@ namespace Scp012
                 {
                     foreach (Player ply in Player.List)
                     {
-                        if (!ply.IsAlive || ply.IsGodModeEnabled) continue;
-
-                        if (plugin.Config.IgnoredRoles.Contains(ply.Role)) continue;
-
+                        if (!ply.IsAlive || ply.IsGodModeEnabled || plugin.Config.IgnoredRoles.Contains(ply.Role)) continue;
 
                         if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < plugin.Config.AffectDistance && Vector3.Distance(Scp012Item.Networkposition, ply.Position) > plugin.Config.NoReturnDistance - 0.1f)
                             ply.Position = Vector3.MoveTowards(ply.Position, Scp012Item.Networkposition, plugin.Config.AttractionForce);

@@ -49,6 +49,7 @@ namespace Scp012
             MapEvent.AnnouncingScpTermination -= handler.OnAnnouncingScpTermination;
 
             handler = null;
+            Singleton = null;
 
             base.OnDisabled();
         }
