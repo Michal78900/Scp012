@@ -23,9 +23,7 @@ namespace Scp012
                 {
                     foreach (Player ply in Player.List)
                     {
-                        if (!ply.IsAlive || ply.IsGodModeEnabled) continue;
-
-                        if (plugin.Config.IgnoredRoles.Contains(ply.Role)) continue;
+                        if (!ply.IsAlive || ply.IsGodModeEnabled || (plugin.Config.IgnoredRoles.Contains(ply.Role))) continue;
 
 
                         if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < plugin.Config.AffectDistance)
