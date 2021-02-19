@@ -35,7 +35,6 @@ namespace Scp012
         };
 
         DoorVariant Scp012BottomDoor;
-
         Vector3 doorPos;
 
         Pickup Scp012Item;
@@ -48,14 +47,51 @@ namespace Scp012
         public void OnWaitingForPlayers()
         {
             Scp012BottomDoor = Map.GetDoorByName("012_BOTTOM");
-
-
             doorPos = Scp012BottomDoor.transform.position;
 
             Log.Debug($"Door rotation: {Scp012BottomDoor.transform.rotation}", plugin.Config.ShowDebugMessages);
             Log.Debug($"Door position: {doorPos}", plugin.Config.ShowDebugMessages);
 
-            SpawnItem();
+            switch (Scp012BottomDoor.transform.rotation.ToString())
+            {
+                case "(0.0, 1.0, 0.0, 0.0)":
+                    {
+                        itemSpawnPos = new Vector3(doorPos.x - 2f, doorPos.y + 1f, doorPos.z - 8.5f);
+                        itemRotaion = new Quaternion(0.1f, 0.1f, 0.1f, -0.1f);
+
+                        baitItemSpawnPos = new Vector3(doorPos.x - 2f, doorPos.y + 1f, doorPos.z - 6.5f);
+                        break;
+                    }
+
+                case "(0.0, 0.0, 0.0, -1.0)":
+                    {
+                        itemSpawnPos = new Vector3(doorPos.x + 2f, doorPos.y + 1f, doorPos.z + 8.5f);
+                        itemRotaion = new Quaternion(-0.05f, 0.1f, 0.1f, 0.1f);
+
+                        baitItemSpawnPos = new Vector3(doorPos.x + 2f, doorPos.y + 1f, doorPos.z + 6.5f);
+                        break;
+                    }
+
+                case "(0.0, 0.7, 0.0, -0.7)":
+                    {
+                        itemSpawnPos = new Vector3(doorPos.x - 8.5f, doorPos.y + 1f, doorPos.z + 2f);
+                        itemRotaion = new Quaternion(0.1f, 0.0f, 0.0f, -0.1f);
+
+                        baitItemSpawnPos = new Vector3(doorPos.x - 6.5f, doorPos.y + 1f, doorPos.z + 2f);
+                        break;
+                    }
+
+                case "(0.0, 0.7, 0.0, 0.7)":
+                    {
+                        itemSpawnPos = new Vector3(doorPos.x + 8.5f, doorPos.y + 1f, doorPos.z - 2f);
+                        itemRotaion = new Quaternion(0.0f, 1.0f, 1.0f, 0.1f);
+
+                        baitItemSpawnPos = new Vector3(doorPos.x + 6.5f, doorPos.y + 1f, doorPos.z - 2f);
+                        break;
+                    }
+            }
+
+            SpawnScp012Item();
         }
 
         public void OnRoundStart()
@@ -70,21 +106,15 @@ namespace Scp012
             coroutines.Add(Timing.RunCoroutine(MovePlayer()));
 
             Log.Debug("Scp012 coroutines started!", plugin.Config.ShowDebugMessages);
+
+            SpawnBaitItems();
         }
 
 
 
         public void OnItemPickup(PickingUpItemEventArgs ev)
         {
-            if (Vector3.Distance(Scp012Item.Networkposition, ev.Pickup.transform.position) < 7.5f)
-            {
-                if (ev.Pickup.ItemId == ItemType.WeaponManagerTablet)
-                {
-                    ev.IsAllowed = false;
-                }
-            }
-
-            if (PlayersInteracting.Contains(ev.Player))
+            if (ev.Pickup == Scp012Item || PlayersInteracting.Contains(ev.Player))
             {
                 ev.IsAllowed = false;
             }
@@ -127,47 +157,8 @@ namespace Scp012
             }
         }
 
-        public void SpawnItem()
+        public void SpawnScp012Item()
         {
-            switch (Scp012BottomDoor.transform.rotation.ToString())
-            {
-                case "(0.0, 1.0, 0.0, 0.0)":
-                    {
-                        itemSpawnPos = new Vector3(doorPos.x - 2f, doorPos.y + 1f, doorPos.z - 8.5f);
-                        itemRotaion = new Quaternion(0.1f, 0.1f, 0.1f, -0.1f);
-
-                        baitItemSpawnPos = new Vector3(doorPos.x - 2f, doorPos.y + 1f, doorPos.z - 6.5f);
-                        break;
-                    }
-
-                case "(0.0, 0.0, 0.0, -1.0)":
-                    {
-                        itemSpawnPos = new Vector3(doorPos.x + 2f, doorPos.y + 1f, doorPos.z + 8.5f);
-                        itemRotaion = new Quaternion(-0.05f, 0.1f, 0.1f, 0.1f);
-
-                        baitItemSpawnPos = new Vector3(doorPos.x + 2f, doorPos.y + 1f, doorPos.z + 6.5f);
-                        break;
-                    }
-
-                case "(0.0, 0.7, 0.0, -0.7)":
-                    {
-                        itemSpawnPos = new Vector3(doorPos.x - 8.5f, doorPos.y + 1f, doorPos.z + 2f);
-                        itemRotaion = new Quaternion(0.1f, 0.0f, 0.0f, -0.1f);
-
-                        baitItemSpawnPos = new Vector3(doorPos.x - 6.5f, doorPos.y + 1f, doorPos.z + 2f);
-                        break;
-                    }
-
-                case "(0.0, 0.7, 0.0, 0.7)":
-                    {
-                        itemSpawnPos = new Vector3(doorPos.x + 8.5f, doorPos.y + 1f, doorPos.z - 2f);
-                        itemRotaion = new Quaternion(0.0f, 1.0f, 1.0f, 0.1f);
-
-                        baitItemSpawnPos = new Vector3(doorPos.x + 6.5f, doorPos.y + 1f, doorPos.z - 2f);
-                        break;
-                    }
-            }
-
             Scp012Item = Exiled.API.Extensions.Item.Spawn(ItemType.WeaponManagerTablet, 0, itemSpawnPos, itemRotaion);
 
             Log.Debug($"Item pos: {itemSpawnPos}", plugin.Config.ShowDebugMessages);
@@ -180,8 +171,10 @@ namespace Scp012
             NetworkServer.Spawn(gameObject);
 
             Log.Debug("SCP-012 item spawnned successfully!", plugin.Config.ShowDebugMessages);
+        }
 
-
+        public void SpawnBaitItems()
+        {
             for (int i = 0; i < plugin.Config.BaitItems.Count; i++)
             {
                 foreach (KeyValuePair<string, int> baitItem in plugin.Config.BaitItems[i])
@@ -240,59 +233,66 @@ namespace Scp012
             {
                 yield return Timing.WaitForSeconds(0.25f);
 
-                foreach (Player ply in Player.List)
+                try
                 {
-                    if (!ply.IsAlive || ply.IsGodModeEnabled) continue;
-
-                    if (plugin.Config.IgnoredRoles.Contains(ply.Role)) continue;
-
-
-                    if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < plugin.Config.AffectDistance)
+                    foreach (Player ply in Player.List)
                     {
-                        foreach (string EffectName in plugin.Config.AffectEffects)
+                        if (!ply.IsAlive || ply.IsGodModeEnabled) continue;
+
+                        if (plugin.Config.IgnoredRoles.Contains(ply.Role)) continue;
+
+
+                        if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < plugin.Config.AffectDistance)
                         {
-                            ply.ReferenceHub.playerEffectsController.EnableByString(EffectName, 2f, false);
+                            foreach (string EffectName in plugin.Config.AffectEffects)
+                            {
+                                ply.ReferenceHub.playerEffectsController.EnableByString(EffectName, 2f, false);
+                            }
+                        }
+
+                        if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < plugin.Config.NoReturnDistance)
+                        {
+                            foreach (string EffectName in plugin.Config.NoReturnEffects)
+                            {
+                                ply.ReferenceHub.playerEffectsController.EnableByString(EffectName, 2f, false);
+                            }
+
+                            if (!PlayersInteracting.Contains(ply))
+                            {
+                                PlayersInteracting.Add(ply);
+
+                                Timing.RunCoroutine(VoiceLines(ply));
+                            }
                         }
                     }
 
-                    if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < plugin.Config.NoReturnDistance)
+                    if (PlayersInteracting.Any() && (plugin.Config.AutoCloseDoor || plugin.Config.AutoLockDoor))
                     {
-                        foreach (string EffectName in plugin.Config.NoReturnEffects)
-                        {
-                            ply.ReferenceHub.playerEffectsController.EnableByString(EffectName, 2f, false);
-                        }
+                        if (plugin.Config.AutoCloseDoor) Scp012BottomDoor.NetworkTargetState = false;
+                        if (plugin.Config.AutoLockDoor) Scp012BottomDoor.NetworkActiveLocks = 1;
+                    }
+                    else
+                    {
+                        if (plugin.Config.AutoCloseDoor) Scp012BottomDoor.NetworkTargetState = true;
+                        if (plugin.Config.AutoLockDoor) Scp012BottomDoor.NetworkActiveLocks = 0;
+                    }
 
-                        if (!PlayersInteracting.Contains(ply))
-                        {
-                            PlayersInteracting.Add(ply);
+                    if (plugin.Config.AllowItemRespawn && Vector3.Distance(itemSpawnPos, Scp012Item.Networkposition) > 3f)
+                    {
+                        Scp012Item.Delete();
 
-                            VoiceLines(ply);
-                        }
+                        Scp012Item = Exiled.API.Extensions.Item.Spawn(ItemType.WeaponManagerTablet, 0, itemSpawnPos, itemRotaion);
+
+                        GameObject gameObject = Scp012Item.gameObject;
+                        gameObject.transform.localScale = new Vector3(0.5f, 2.5f, 2.5f);
+
+                        NetworkServer.UnSpawn(gameObject);
+                        NetworkServer.Spawn(gameObject);
                     }
                 }
-
-                if (PlayersInteracting.Any() && (plugin.Config.AutoCloseDoor || plugin.Config.AutoLockDoor))
+                catch (Exception)
                 {
-                    if (plugin.Config.AutoCloseDoor) Scp012BottomDoor.NetworkTargetState = false;
-                    if (plugin.Config.AutoLockDoor) Scp012BottomDoor.NetworkActiveLocks = 1;
-                }
-                else
-                {
-                    if (plugin.Config.AutoCloseDoor) Scp012BottomDoor.NetworkTargetState = true;
-                    if (plugin.Config.AutoLockDoor) Scp012BottomDoor.NetworkActiveLocks = 0;
-                }
-
-                if (plugin.Config.AllowItemRespawn && Vector3.Distance(itemSpawnPos, Scp012Item.Networkposition) > 3f)
-                {
-                    Scp012Item.Delete();
-
-                    Scp012Item = Exiled.API.Extensions.Item.Spawn(ItemType.WeaponManagerTablet, 0, itemSpawnPos, itemRotaion);
-
-                    GameObject gameObject = Scp012Item.gameObject;
-                    gameObject.transform.localScale = new Vector3(0.5f, 2.5f, 2.5f);
-
-                    NetworkServer.UnSpawn(gameObject);
-                    NetworkServer.Spawn(gameObject);
+                    continue;
                 }
             }
         }
@@ -303,91 +303,99 @@ namespace Scp012
             {
                 yield return Timing.WaitForSeconds(0.1f);
 
-                foreach (Player ply in Player.List)
+                try
                 {
-                    if (!ply.IsAlive || ply.IsGodModeEnabled) continue;
+                    foreach (Player ply in Player.List)
+                    {
+                        if (!ply.IsAlive || ply.IsGodModeEnabled) continue;
 
-                    if (plugin.Config.IgnoredRoles.Contains(ply.Role)) continue;
+                        if (plugin.Config.IgnoredRoles.Contains(ply.Role)) continue;
 
 
-                    if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < plugin.Config.AffectDistance && Vector3.Distance(Scp012Item.Networkposition, ply.Position) > plugin.Config.NoReturnDistance - 0.1f)
-                        ply.Position = Vector3.MoveTowards(ply.Position, Scp012Item.Networkposition, plugin.Config.AttractionForce);
+                        if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < plugin.Config.AffectDistance && Vector3.Distance(Scp012Item.Networkposition, ply.Position) > plugin.Config.NoReturnDistance - 0.1f)
+                            ply.Position = Vector3.MoveTowards(ply.Position, Scp012Item.Networkposition, plugin.Config.AttractionForce);
+                    }
+                }
+                catch (Exception)
+                {
+                    continue;
                 }
             }
         }
 
-        public void VoiceLines(Player ply)
+        private IEnumerator<float> VoiceLines(Player ply)
         {
             bool blood = plugin.Config.SpawnBlood;
 
             ply.ShowHint(plugin.Config.IHaveTo);
 
+
+            yield return Timing.WaitForSeconds(5f);
+
             if (plugin.Config.DropItems)
             {
-                Timing.CallDelayed(5f, () =>
-                {
-                    ply.DropItems();
-                });
+                ply.DropItems();
             }
 
-            Timing.CallDelayed(5.1f, () =>
+            foreach (string EffectName in plugin.Config.DyingEffects)
             {
-                foreach (string EffectName in plugin.Config.DyingEffects)
-                {
-                    ply.ReferenceHub.playerEffectsController.EnableByString(EffectName, 15f, false);
-                }
+                ply.ReferenceHub.playerEffectsController.EnableByString(EffectName, 15f, false);
+            }
 
-                if (rng.Next(0, 2) == 0) ply.ShowHint(plugin.Config.IDontThink);
+            if (rng.Next(0, 2) == 0) ply.ShowHint(plugin.Config.IDontThink);
 
-                else ply.ShowHint(plugin.Config.IMust);
+            else ply.ShowHint(plugin.Config.IMust);
 
-                if (blood) ply.ReferenceHub.characterClassManager.RpcPlaceBlood(ply.Position, 0, 1f);
-            });
+            if (blood) ply.ReferenceHub.characterClassManager.RpcPlaceBlood(ply.Position, 0, 1f);
 
-            Timing.CallDelayed(10f, () =>
+
+
+            yield return Timing.WaitForSeconds(5f);
+
+            if (rng.Next(0, 2) == 0) ply.ShowHint(plugin.Config.NoChoice);
+
+            else ply.ShowHint(plugin.Config.NoSense);
+
+            if (blood) ply.ReferenceHub.characterClassManager.RpcPlaceBlood(ply.Position, 0, 2f);
+
+
+
+            yield return Timing.WaitForSeconds(5f);
+
+            if (rng.Next(0, 2) == 0) ply.ShowHint(plugin.Config.IsImpossible);
+
+            else ply.ShowHint(plugin.Config.CantBeCompleted);
+
+            if (blood) ply.ReferenceHub.characterClassManager.RpcPlaceBlood(ply.Position, 0, 3f);
+
+
+            
+            yield return Timing.WaitForSeconds(5f);
+
+            PlayersInteracting.Remove(ply);
+
+            if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < 7.5f)
             {
-                if (rng.Next(0, 2) == 0) ply.ShowHint(plugin.Config.NoChoice);
+                if (blood) ply.ReferenceHub.characterClassManager.RpcPlaceBlood(ply.Position, 0, 5f);
 
-                else ply.ShowHint(plugin.Config.NoSense);
+                if (!plugin.Config.DropItems) ply.ClearInventory();
 
-                if (blood) ply.ReferenceHub.characterClassManager.RpcPlaceBlood(ply.Position, 0, 2f);
-            });
+                ply.Kill(DamageTypes.Bleeding);
+            }
 
-            Timing.CallDelayed(15f, () =>
-            {
-                if (rng.Next(0, 2) == 0) ply.ShowHint(plugin.Config.IsImpossible);
 
-                else ply.ShowHint(plugin.Config.CantBeCompleted);
-
-                if (blood) ply.ReferenceHub.characterClassManager.RpcPlaceBlood(ply.Position, 0, 3f);
-            });
-
-            Timing.CallDelayed(20f, () =>
-            {
-                PlayersInteracting.Remove(ply);
-
-                if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < 7.5f)
-                {
-                    if (blood) ply.ReferenceHub.characterClassManager.RpcPlaceBlood(ply.Position, 0, 5f);
-
-                    if (!plugin.Config.DropItems) ply.ClearInventory();
-                    
-                    ply.Kill(DamageTypes.Bleeding);
-                }
-            });
 
             if (plugin.Config.RagdollCleanupDelay > 0)
             {
-                Timing.CallDelayed(20f + plugin.Config.RagdollCleanupDelay, () =>
+                yield return Timing.WaitForSeconds(5f);
+
+                foreach (Ragdoll ragdoll in UnityEngine.Object.FindObjectsOfType<Ragdoll>())
                 {
-                    foreach (Ragdoll ragdoll in UnityEngine.Object.FindObjectsOfType<Ragdoll>())
+                    if (Vector3.Distance(ragdoll.transform.position, Scp012Item.transform.position) < 5f)
                     {
-                        if (Vector3.Distance(ragdoll.transform.position, Scp012Item.transform.position) < 5f)
-                        {
-                            NetworkServer.Destroy(ragdoll.gameObject);
-                        }
+                        NetworkServer.Destroy(ragdoll.gameObject);
                     }
-                });
+                }
             }
         }
     }

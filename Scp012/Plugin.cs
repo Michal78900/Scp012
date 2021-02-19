@@ -12,10 +12,8 @@ namespace Scp012
     {
         public static Scp012 Singleton;
 
-        public override PluginPriority Priority => PluginPriority.Medium;
-
         public override string Author => "Michal78900";
-        public override Version Version => new Version(1, 3, 0);
+        public override Version Version => new Version(2,0,0);
         public override Version RequiredExiledVersion => new Version(2, 1, 30);
 
 
@@ -23,8 +21,6 @@ namespace Scp012
 
         public override void OnEnabled()
         {
-            base.OnEnabled();
-
             Singleton = this;
 
             handler = new Handler(this);
@@ -37,12 +33,12 @@ namespace Scp012
             PlayerEvent.Hurting += handler.OnHurting;
 
             MapEvent.AnnouncingScpTermination += handler.OnAnnouncingScpTermination;
+
+            base.OnEnabled();
         }
 
         public override void OnDisabled()
         {
-            base.OnDisabled();
-
             ServerEvent.WaitingForPlayers -= handler.OnWaitingForPlayers;
             ServerEvent.RoundStarted -= handler.OnRoundStart;
 
@@ -53,6 +49,8 @@ namespace Scp012
             MapEvent.AnnouncingScpTermination -= handler.OnAnnouncingScpTermination;
 
             handler = null;
+
+            base.OnDisabled();
         }
     }
 }
