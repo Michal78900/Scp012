@@ -26,7 +26,9 @@ namespace Scp012
                         if (!ply.IsAlive || ply.IsGodModeEnabled || (plugin.Config.IgnoredRoles.Contains(ply.Role))) continue;
 
 
-                        if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < plugin.Config.AffectDistance)
+                        float DistanceToScp012 = Vector3.Distance(Scp012Item.Networkposition, ply.Position);
+
+                        if (DistanceToScp012 < plugin.Config.AffectDistance)
                         {
                             foreach (string EffectName in plugin.Config.AffectEffects)
                             {
@@ -34,7 +36,7 @@ namespace Scp012
                             }
                         }
 
-                        if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < plugin.Config.NoReturnDistance)
+                        if (DistanceToScp012 < plugin.Config.NoReturnDistance)
                         {
                             foreach (string EffectName in plugin.Config.NoReturnEffects)
                             {
