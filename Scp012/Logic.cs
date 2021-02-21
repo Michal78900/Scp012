@@ -169,8 +169,7 @@ namespace Scp012
 
             if (plugin.Config.RagdollCleanupDelay > 0)
             {
-                yield return Timing.WaitForSeconds(5f);
-
+                yield return Timing.WaitForSeconds(plugin.Config.RagdollCleanupDelay);
 
                 foreach (Ragdoll ragdoll in UnityEngine.Object.FindObjectsOfType<Ragdoll>())
                 {
