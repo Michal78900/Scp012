@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
 using Exiled.API.Features;
-using Exiled.Events.EventArgs;
 using System.Collections.Generic;
 using MEC;
 using UnityEngine;
 using Interactables.Interobjects.DoorUtils;
 using Mirror;
+using Object = UnityEngine.Object;
 
 namespace Scp012
 {
@@ -53,13 +51,12 @@ namespace Scp012
 
                     if (PlayersInteracting.Count > 0 && (plugin.Config.AutoCloseDoor || plugin.Config.AutoLockDoor))
                     {
+                        if (plugin.Config.AutoLockDoor) Scp012BottomDoor.ServerChangeLock(DoorLockReason.SpecialDoorFeature, true);
                         if (plugin.Config.AutoCloseDoor) Scp012BottomDoor.NetworkTargetState = false;
-                        if (plugin.Config.AutoLockDoor) Scp012BottomDoor.NetworkActiveLocks = 1;
                     }
                     else
                     {
-                        if (plugin.Config.AutoCloseDoor) Scp012BottomDoor.NetworkTargetState = true;
-                        if (plugin.Config.AutoLockDoor) Scp012BottomDoor.NetworkActiveLocks = 0;
+                        if (plugin.Config.AutoLockDoor) Scp012BottomDoor.ServerChangeLock(DoorLockReason.SpecialDoorFeature, false);
                     }
 
                     if (plugin.Config.AllowItemRespawn && Vector3.Distance(itemSpawnPos, Scp012Item.Networkposition) > 3f)
@@ -162,7 +159,11 @@ namespace Scp012
 
                 if (!plugin.Config.DropItems) ply.ClearInventory();
 
+                scp012death = true;
+
                 ply.Kill(DamageTypes.Bleeding);
+
+                scp012death = false;
             }
 
 
@@ -170,10 +171,11 @@ namespace Scp012
             {
                 yield return Timing.WaitForSeconds(plugin.Config.RagdollCleanupDelay);
 
-                foreach (Ragdoll ragdoll in UnityEngine.Object.FindObjectsOfType<Ragdoll>())
+                foreach (Ragdoll ragdoll in Object.FindObjectsOfType<Ragdoll>())
                 {
                     if (Vector3.Distance(ragdoll.transform.position, Scp012Item.transform.position) < 5f)
                     {
+                        Log.Info("Find ragdoll");
                         NetworkServer.Destroy(ragdoll.gameObject);
                     }
                 }

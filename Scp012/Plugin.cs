@@ -13,7 +13,7 @@ namespace Scp012
         public static Scp012 Singleton;
 
         public override string Author => "Michal78900";
-        public override Version Version => new Version(2, 0, 1);
+        public override Version Version => new Version(2, 1, 0);
         public override Version RequiredExiledVersion => new Version(2, 3, 4);
 
         private Handler handler;
@@ -27,7 +27,7 @@ namespace Scp012
             ServerEvent.WaitingForPlayers += handler.OnWaitingForPlayers;
             ServerEvent.RoundStarted += handler.OnRoundStart;
 
-            PlayerEvent.InteractingDoor += handler.OnDoor;
+            PlayerEvent.Destroying += handler.OnDestroy;
             Scp079Event.InteractingDoor += handler.OnDoor;
             PlayerEvent.PickingUpItem += handler.OnItemPickup;
             PlayerEvent.DroppingItem += handler.OnItemDrop;
@@ -43,8 +43,7 @@ namespace Scp012
             ServerEvent.WaitingForPlayers -= handler.OnWaitingForPlayers;
             ServerEvent.RoundStarted -= handler.OnRoundStart;
 
-
-            PlayerEvent.InteractingDoor -= handler.OnDoor;
+            PlayerEvent.Destroying -= handler.OnDestroy;
             Scp079Event.InteractingDoor -= handler.OnDoor;
             PlayerEvent.PickingUpItem -= handler.OnItemPickup;
             PlayerEvent.DroppingItem -= handler.OnItemDrop;

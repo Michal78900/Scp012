@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs;
 using System.Collections.Generic;
@@ -42,6 +40,8 @@ namespace Scp012
         Quaternion itemRotaion;
 
         Vector3 baitItemSpawnPos;
+
+        bool scp012death = false;
 
 
         public void OnWaitingForPlayers()
@@ -112,6 +112,14 @@ namespace Scp012
         }
 
 
+        public void OnDestroy(DestroyingEventArgs ev)
+        {
+            if(PlayersInteracting.Contains(ev.Player))
+            {
+                PlayersInteracting.Remove(ev.Player);
+            }
+        }
+
         public void OnDoor(InteractingDoorEventArgs ev)
         {
             if (ev.Door == Scp012BottomDoor)
@@ -150,7 +158,7 @@ namespace Scp012
 
         public void OnAnnouncingScpTermination(AnnouncingScpTerminationEventArgs ev)
         {
-            if (ev.HitInfo.GetDamageType() == DamageTypes.Bleeding)
+            if (scp012death && ev.HitInfo.GetDamageType() == DamageTypes.Bleeding)
             {
                 ev.IsAllowed = false;
 
