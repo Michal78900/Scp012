@@ -159,11 +159,16 @@ namespace Scp012
 
                 if (!plugin.Config.DropItems) ply.ClearInventory();
 
-                scp012death = true;
+                if (ply.IsScp)
+                {
+                    scp012death = true;
+                    Log.Debug($"Bool is {scp012death} (before killing)", plugin.Config.ShowDebugMessages);
+                }
 
                 ply.Kill(DamageTypes.Bleeding);
 
                 scp012death = false;
+                Log.Debug($"Bool is {scp012death} (after killing)", plugin.Config.ShowDebugMessages);
             }
 
 

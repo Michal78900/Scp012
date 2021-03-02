@@ -158,6 +158,8 @@ namespace Scp012
 
         public void OnAnnouncingScpTermination(AnnouncingScpTerminationEventArgs ev)
         {
+            Log.Debug($"\nSCP died:\nReason: {ev.HitInfo.GetDamageName()}\nBool: {scp012death}", plugin.Config.ShowDebugMessages);
+
             if (scp012death && ev.HitInfo.GetDamageType() == DamageTypes.Bleeding)
             {
                 ev.IsAllowed = false;
