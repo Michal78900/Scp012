@@ -112,6 +112,13 @@ namespace Scp012
         }
 
 
+        public void OnDoor(InteractingDoorEventArgs ev)
+        {
+            if (ev.Door == Scp012BottomDoor)
+            {
+                ev.IsAllowed = false;
+            }
+        }
 
         public void OnItemPickup(PickingUpItemEventArgs ev)
         {

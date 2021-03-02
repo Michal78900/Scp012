@@ -25,7 +25,6 @@ namespace Scp012
                     {
                         if (!ply.IsAlive || ply.IsGodModeEnabled || (plugin.Config.IgnoredRoles.Contains(ply.Role))) continue;
 
-
                         float DistanceToScp012 = Vector3.Distance(Scp012Item.Networkposition, ply.Position);
 
                         if (DistanceToScp012 < plugin.Config.AffectDistance)

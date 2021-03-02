@@ -32,53 +32,47 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Exiled Stuff\Exiled dll\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\C#\Stuff\Pluginy EXILED\Exiled Stuff\Exiled dll\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Exiled Stuff\Exiled dll\Assembly-CSharp-firstpass.dll</HintPath>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>..\..\..\C#\Stuff\Pluginy EXILED\Exiled Stuff\Exiled dll\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-Publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Exiled Stuff\Exiled dll\Assembly-CSharp-Publicized.dll</HintPath>
+    <Reference Include="Assembly-CSharp-Publicized">
+      <HintPath>..\..\..\C#\Stuff\Pluginy EXILED\Exiled Stuff\Exiled dll\Assembly-CSharp-Publicized.dll</HintPath>
     </Reference>
-    <Reference Include="CommandSystem.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Exiled Stuff\Exiled dll\CommandSystem.Core.dll</HintPath>
+    <Reference Include="CommandSystem.Core">
+      <HintPath>..\..\..\C#\Stuff\Pluginy EXILED\Exiled Stuff\Exiled dll\CommandSystem.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.API, Version=2.1.28.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Exiled Stuff\Exiled dll\Exiled.API.dll</HintPath>
+    <Reference Include="Exiled.API, Version=2.3.4.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\EXILED.2.3.4\lib\net472\Exiled.API.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.Events, Version=2.1.28.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Exiled Stuff\Exiled dll\Exiled.Events.dll</HintPath>
+    <Reference Include="Exiled.Bootstrap, Version=2.3.4.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\EXILED.2.3.4\lib\net472\Exiled.Bootstrap.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.Loader, Version=2.1.28.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Exiled Stuff\Exiled dll\Exiled.Loader.dll</HintPath>
+    <Reference Include="Exiled.CreditTags, Version=2.3.4.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\EXILED.2.3.4\lib\net472\Exiled.CreditTags.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.Permissions, Version=2.1.28.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Exiled Stuff\Exiled dll\Exiled.Permissions.dll</HintPath>
+    <Reference Include="Exiled.Events, Version=2.3.4.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\EXILED.2.3.4\lib\net472\Exiled.Events.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.Updater, Version=3.0.3.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Exiled Stuff\Exiled dll\Exiled.Updater.dll</HintPath>
+    <Reference Include="Exiled.Loader, Version=2.3.4.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\EXILED.2.3.4\lib\net472\Exiled.Loader.dll</HintPath>
     </Reference>
-    <Reference Include="Mirror, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Exiled Stuff\Exiled dll\Mirror.dll</HintPath>
+    <Reference Include="Exiled.Permissions, Version=2.3.4.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\EXILED.2.3.4\lib\net472\Exiled.Permissions.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Exiled Stuff\Exiled dll\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Exiled.Updater, Version=3.1.1.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\EXILED.2.3.4\lib\net472\Exiled.Updater.dll</HintPath>
     </Reference>
-    <Reference Include="NorthwoodLib, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Exiled Stuff\Exiled dll\NorthwoodLib.dll</HintPath>
+    <Reference Include="Mirror">
+      <HintPath>..\..\..\C#\Stuff\Pluginy EXILED\Exiled Stuff\Exiled dll\Mirror.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\C#\Stuff\Pluginy EXILED\Exiled Stuff\Exiled dll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NorthwoodLib">
+      <HintPath>..\..\..\C#\Stuff\Pluginy EXILED\Exiled Stuff\Exiled dll\NorthwoodLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -106,6 +100,9 @@
     <Compile Include="Logic.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
