@@ -1,26 +1,36 @@
-﻿using System;
-using Exiled.API.Features;
-using Exiled.Events.EventArgs;
-using System.Collections.Generic;
-using MEC;
-using UnityEngine;
-using Interactables.Interobjects.DoorUtils;
-using Mirror;
-
-
-namespace Scp012
+﻿namespace Scp012
 {
-    partial class Handler
+    using System;
+    using Exiled.API.Extensions;
+    using Exiled.API.Features;
+    using Exiled.Events.EventArgs;
+    using System.Collections.Generic;
+    using MEC;
+    using UnityEngine;
+    using Interactables.Interobjects.DoorUtils;
+    using Mirror;
+
+    public partial class Handler
     {
-        private readonly Scp012 plugin;
-        public Handler(Scp012 plugin) => this.plugin = plugin;
-
-
-        public System.Random rng = new System.Random();
+        public static readonly Config Config = Scp012.Singleton.Config;
 
         public List<CoroutineHandle> coroutines = new List<CoroutineHandle>();
 
         public List<Player> PlayersInteracting = new List<Player>();
+
+        private DoorVariant Scp012BottomDoor;
+        private Vector3 doorPos;
+
+        private Pickup Scp012Item;
+        private Vector3 itemSpawnPos;
+        //private Quaternion itemRotaion;
+        private Vector3 itemRotation;
+
+        private Vector3 baitItemSpawnPos;
+
+        private bool scp012death = false;
+
+        private readonly System.Random rng = new System.Random();
 
         private readonly Dictionary<RoleType, string> RoleToString = new Dictionary<RoleType, string>
         {
@@ -32,33 +42,20 @@ namespace Scp012
             {RoleType.Scp93989, "SCP 9 3 9" }
         };
 
-        DoorVariant Scp012BottomDoor;
-        Vector3 doorPos;
-
-        Pickup Scp012Item;
-        Vector3 itemSpawnPos;
-        Quaternion itemRotaion;
-
-        Vector3 baitItemSpawnPos;
-
-        bool scp012death = false;
-
-
-        public void OnWaitingForPlayers()
+        internal void OnWaitingForPlayers()
         {
             Scp012BottomDoor = Map.GetDoorByName("012_BOTTOM");
             doorPos = Scp012BottomDoor.transform.position;
 
-            Log.Debug($"Door rotation: {Scp012BottomDoor.transform.rotation}", plugin.Config.ShowDebugMessages);
-            Log.Debug($"Door position: {doorPos}", plugin.Config.ShowDebugMessages);
-
+            Log.Debug($"Door rotation: {Scp012BottomDoor.transform.rotation}", Config.Debug);
+            Log.Debug($"Door position: {doorPos}", Config.Debug);
 
             switch (Scp012BottomDoor.transform.rotation.ToString())
             {
                 case "(0.0, 1.0, 0.0, 0.0)":
                     {
-                        itemSpawnPos = new Vector3(doorPos.x - 2f, doorPos.y + 1f, doorPos.z - 8.5f);
-                        itemRotaion = new Quaternion(0.1f, 0.1f, 0.1f, -0.1f);
+                        itemSpawnPos = new Vector3(doorPos.x - 2.05f, doorPos.y + 0.8f, doorPos.z - 8.5f);
+                        itemRotation = new Vector3(-90f, -90f, 0f);
 
                         baitItemSpawnPos = new Vector3(doorPos.x - 2f, doorPos.y + 1f, doorPos.z - 6.5f);
                         break;
@@ -66,8 +63,8 @@ namespace Scp012
 
                 case "(0.0, 0.0, 0.0, -1.0)":
                     {
-                        itemSpawnPos = new Vector3(doorPos.x + 2f, doorPos.y + 1f, doorPos.z + 8.5f);
-                        itemRotaion = new Quaternion(-0.05f, 0.1f, 0.1f, 0.1f);
+                        itemSpawnPos = new Vector3(doorPos.x + 2.05f, doorPos.y + 0.8f, doorPos.z + 8.5f);
+                        itemRotation = new Vector3(-90f, 90f, 0f);
 
                         baitItemSpawnPos = new Vector3(doorPos.x + 2f, doorPos.y + 1f, doorPos.z + 6.5f);
                         break;
@@ -75,8 +72,8 @@ namespace Scp012
 
                 case "(0.0, 0.7, 0.0, -0.7)":
                     {
-                        itemSpawnPos = new Vector3(doorPos.x - 8.5f, doorPos.y + 1f, doorPos.z + 2f);
-                        itemRotaion = new Quaternion(0.1f, 0.0f, 0.0f, -0.1f);
+                        itemSpawnPos = new Vector3(doorPos.x - 8.5f, doorPos.y + 0.8f, doorPos.z + 2.05f);
+                        itemRotation = new Vector3(-90f, 0f, 0);
 
                         baitItemSpawnPos = new Vector3(doorPos.x - 6.5f, doorPos.y + 1f, doorPos.z + 2f);
                         break;
@@ -84,8 +81,8 @@ namespace Scp012
 
                 case "(0.0, 0.7, 0.0, 0.7)":
                     {
-                        itemSpawnPos = new Vector3(doorPos.x + 8.5f, doorPos.y + 1f, doorPos.z - 2f);
-                        itemRotaion = new Quaternion(0.0f, 1.0f, 1.0f, 0.1f);
+                        itemSpawnPos = new Vector3(doorPos.x + 8.5f, doorPos.y + 0.8f, doorPos.z - 2.05f);
+                        itemRotation = new Vector3(-90f, 0f, 180f);
 
                         baitItemSpawnPos = new Vector3(doorPos.x + 6.5f, doorPos.y + 1f, doorPos.z - 2f);
                         break;
@@ -95,7 +92,7 @@ namespace Scp012
             SpawnScp012Item();
         }
 
-        public void OnRoundStart()
+        internal void OnRoundStart()
         {
             foreach (CoroutineHandle coroutine in coroutines)
             {
@@ -106,21 +103,20 @@ namespace Scp012
             coroutines.Add(Timing.RunCoroutine(ScpMechanic()));
             coroutines.Add(Timing.RunCoroutine(MovePlayer()));
 
-            Log.Debug("Scp012 coroutines started!", plugin.Config.ShowDebugMessages);
+            Log.Debug("Scp012 coroutines started!", Config.Debug);
 
             SpawnBaitItems();
         }
 
-
-        public void OnDestroy(DestroyingEventArgs ev)
+        internal void OnDestroy(DestroyingEventArgs ev)
         {
-            if(PlayersInteracting.Contains(ev.Player))
+            if (PlayersInteracting.Contains(ev.Player))
             {
                 PlayersInteracting.Remove(ev.Player);
             }
         }
 
-        public void OnDoor(InteractingDoorEventArgs ev)
+        internal void OnDoor(InteractingDoorEventArgs ev)
         {
             if (ev.Door == Scp012BottomDoor)
             {
@@ -128,7 +124,7 @@ namespace Scp012
             }
         }
 
-        public void OnItemPickup(PickingUpItemEventArgs ev)
+        internal void OnItemPickup(PickingUpItemEventArgs ev)
         {
             if (ev.Pickup == Scp012Item || PlayersInteracting.Contains(ev.Player))
             {
@@ -136,7 +132,7 @@ namespace Scp012
             }
         }
 
-        public void OnItemDrop(DroppingItemEventArgs ev)
+        internal void OnItemDrop(DroppingItemEventArgs ev)
         {
             if (PlayersInteracting.Contains(ev.Player))
             {
@@ -144,9 +140,9 @@ namespace Scp012
             }
         }
 
-        public void OnHurting(HurtingEventArgs ev)
+        internal void OnHurting(HurtingEventArgs ev)
         {
-            if (PlayersInteracting.Contains(ev.Target) && !plugin.Config.EffectsDamage)
+            if (PlayersInteracting.Contains(ev.Target) && !Config.EffectsDamage)
             {
                 var dmgType = ev.HitInformations.GetDamageType();
 
@@ -155,18 +151,17 @@ namespace Scp012
             }
         }
 
-
-        public void OnAnnouncingScpTermination(AnnouncingScpTerminationEventArgs ev)
+        internal void OnAnnouncingScpTermination(AnnouncingScpTerminationEventArgs ev)
         {
-            Log.Debug($"\nSCP died:\nReason: {ev.HitInfo.GetDamageName()}\nBool: {scp012death}", plugin.Config.ShowDebugMessages);
+            Log.Debug($"\nSCP died:\nReason: {ev.HitInfo.GetDamageName()}\nBool: {scp012death}", Config.Debug);
 
             if (scp012death && ev.HitInfo.GetDamageType() == DamageTypes.Bleeding)
             {
                 ev.IsAllowed = false;
 
-                if (!string.IsNullOrEmpty(plugin.Config.CassieMessage))
+                if (!string.IsNullOrEmpty(Config.CassieMessage))
                 {
-                    string message = plugin.Config.CassieMessage;
+                    string message = Config.CassieMessage;
                     message = message.Replace("{scp}", $"{RoleToString[ev.Role.roleId]}");
 
                     Cassie.GlitchyMessage(message, 0.05f, 0.05f);
@@ -174,73 +169,65 @@ namespace Scp012
             }
         }
 
-        public void SpawnScp012Item()
+        internal void SpawnScp012Item()
         {
-            Scp012Item = Exiled.API.Extensions.Item.Spawn(ItemType.WeaponManagerTablet, 0, itemSpawnPos, itemRotaion);
+            //Scp012Item = Item.Spawn(ItemType.WeaponManagerTablet, 0, itemSpawnPos, itemRotaion);
+            Scp012Item = Item.Spawn(ItemType.WeaponManagerTablet, 0, itemSpawnPos, Quaternion.Euler(itemRotation));
 
-            Log.Debug($"Item pos: {itemSpawnPos}", plugin.Config.ShowDebugMessages);
+            Log.Debug($"Item pos: {itemSpawnPos}", Config.Debug);
 
             GameObject gameObject = Scp012Item.gameObject;
 
             gameObject.transform.localScale = new Vector3(0.5f, 2.5f, 2.5f);
 
+            var rigidbody = gameObject.GetComponent<Rigidbody>();
+            rigidbody.isKinematic = false;
+            rigidbody.useGravity = false;
+            rigidbody.velocity = Vector3.zero;
+            rigidbody.angularVelocity = Vector3.zero;
+            rigidbody.freezeRotation = true;
+            rigidbody.mass = 100000;
+
             NetworkServer.UnSpawn(gameObject);
             NetworkServer.Spawn(gameObject);
 
-            Log.Debug("SCP-012 item spawnned successfully!", plugin.Config.ShowDebugMessages);
+            Log.Debug("SCP-012 item spawned successfully!", Config.Debug);
         }
 
-        public void SpawnBaitItems()
+        internal void SpawnBaitItems()
         {
-            for (int i = 0; i < plugin.Config.BaitItems.Count; i++)
+            for (int i = 0; i < Config.BaitItems.Count; i++)
             {
-                foreach (KeyValuePair<string, int> baitItem in plugin.Config.BaitItems[i])
+                foreach (KeyValuePair<string, int> baitItem in Config.BaitItems[i])
                 {
-                    ItemType item;
-
-                    try
+                    if (!Enum.TryParse(baitItem.Key, true, out ItemType item))
                     {
-                        item = (ItemType)Enum.Parse(typeof(ItemType), baitItem.Key, true);
-                    }
-                    catch (Exception)
-                    {
-                        Log.Error($"\"{baitItem.Key}\" is not a valid ItemType name");
+                        Log.Error($"\"{baitItem.Key}\" is not a valid ItemType name.");
                         continue;
                     }
-
-
-                    float durability = 0;
-
-                    if (plugin.Config.LoadedBaitWeapons)
+                    else
                     {
-                        switch (item)
+                        float durability = 0;
+
+                        if (Config.LoadedBaitWeapons)
+                            durability = item.GetDefaultDurability();
+
+                        int chance = baitItem.Value;
+
+                        if (rng.Next(0, 101) < chance)
                         {
-                            case ItemType.GunCOM15: durability = 12; break;
-                            case ItemType.GunUSP: durability = 18; break;
-                            case ItemType.GunMP7: durability = 35; break;
-                            case ItemType.GunProject90: durability = 50; break;
-                            case ItemType.GunE11SR: durability = 40; break;
-                            case ItemType.GunLogicer: durability = 75; break;
-                            case ItemType.MicroHID: durability = 1; break;
+                            Item.Spawn(item, durability, new Vector3(baitItemSpawnPos.x + UnityEngine.Random.Range(-6.0f, 6.0f), baitItemSpawnPos.y, baitItemSpawnPos.z + UnityEngine.Random.Range(-6.0f, 6f)), RandomRotaion());
 
-                            case ItemType.Ammo556: durability = 25; break;
-                            case ItemType.Ammo762: durability = 35; break;
-                            case ItemType.Ammo9mm: durability = 15; break;
-
-                            default: durability = 0; break;
+                            Log.Debug($"{item} bait item has been spawned inside of SCP-012 chamber!", Config.Debug);
                         }
-                    }
-
-                    int chance = baitItem.Value;
-
-                    if (rng.Next(0, 101) < chance)
-                    {
-                        Exiled.API.Extensions.Item.Spawn(item, durability, new Vector3(baitItemSpawnPos.x + UnityEngine.Random.Range(-6.0f, 6.0f), baitItemSpawnPos.y, baitItemSpawnPos.z + UnityEngine.Random.Range(-6.0f, 6f)), Quaternion.Euler(UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f)));
-
-                        Log.Debug($"{item} bait item has been spawned inside of SCP-012 chamber!", plugin.Config.ShowDebugMessages);
                     }
                 }
             }
+        }
+
+        private Quaternion RandomRotaion()
+        {
+            return Quaternion.Euler(UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f));
         }
     }
 }
