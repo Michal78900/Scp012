@@ -49,6 +49,7 @@ scp012:
 
 # Translations
 ```yml
+  # Texts shown to player that is interacting with SCP-012. Default lines are taken from SCP:CB wiki:
   translations:
     i_have_to: I have to... I have to finish it.
     i_dont_think: I don't... think... I can do this.
