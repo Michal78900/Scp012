@@ -45,14 +45,6 @@ scp012:
   auto_close_door: true
   # Should 012_BOTTOM door lock, when someone interacts with SCP-012?
   auto_lock_door: true
-  # Texts shown to player that is interacting with SCP-012. Default lines are taken from SCP:CB wiki:
-  i_have_to: I have to... I have to finish it.
-  i_dont_think: I don't... think... I can do this.
-  i_must: I... I... must... do it.
-  no_choice: I-I... have... no... ch-choice!
-  no_sense: This....this makes...no sense!
-  is_impossible: No... this... this is... impossible!
-  cant_be_completed: It can't... It can't be completed!
 ```
 
 # Translations
