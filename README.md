@@ -1,5 +1,5 @@
 # Scp012
-# Default config
+# Config
 ```yml
 scp012:
 # Should plugin be enabled?
@@ -54,3 +54,15 @@ scp012:
   is_impossible: No... this... this is... impossible!
   cant_be_completed: It can't... It can't be completed!
 ```
+
+# Translations
+```yml
+  translations:
+    i_have_to: I have to... I have to finish it.
+    i_dont_think: I don't... think... I can do this.
+    i_must: I... I... must... do it.
+    no_choice: I-I... have... no... ch-choice!
+    no_sense: This....this makes...no sense!
+    is_impossible: No... this... this is... impossible!
+    cant_be_completed: It can't... It can't be completed!
+ ```
