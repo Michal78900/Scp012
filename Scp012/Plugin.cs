@@ -15,7 +15,7 @@
         public static Scp012 Singleton;
         public override string Author => "Michal78900";
         public override Version Version => new Version(2, 2, 0);
-        public override Version RequiredExiledVersion => new Version(2, 8, 0);
+        public override Version RequiredExiledVersion => new Version(2, 10, 0);
 
         public static bool IsGS { get; private set; } = false;
 
@@ -31,7 +31,7 @@
             ServerEvent.RoundStarted += handler.OnRoundStart;
 
             PlayerEvent.Destroying += handler.OnDestroy;
-            Scp079Event.InteractingDoor += handler.OnDoor;
+            Scp079Event.TriggeringDoor += handler.OnDoor;
             PlayerEvent.PickingUpItem += handler.OnItemPickup;
             PlayerEvent.DroppingItem += handler.OnItemDrop;
             PlayerEvent.Hurting += handler.OnHurting;
@@ -57,7 +57,7 @@
             ServerEvent.RoundStarted -= handler.OnRoundStart;
 
             PlayerEvent.Destroying -= handler.OnDestroy;
-            Scp079Event.InteractingDoor -= handler.OnDoor;
+            Scp079Event.TriggeringDoor -= handler.OnDoor;
             PlayerEvent.PickingUpItem -= handler.OnItemPickup;
             PlayerEvent.DroppingItem -= handler.OnItemDrop;
             PlayerEvent.Hurting -= handler.OnHurting;

@@ -23,7 +23,6 @@
 
         private Pickup Scp012Item;
         private Vector3 itemSpawnPos;
-        //private Quaternion itemRotaion;
         private Vector3 itemRotation;
 
         private Vector3 baitItemSpawnPos;
@@ -171,7 +170,6 @@
 
         internal void SpawnScp012Item()
         {
-            //Scp012Item = Item.Spawn(ItemType.WeaponManagerTablet, 0, itemSpawnPos, itemRotaion);
             Scp012Item = Item.Spawn(ItemType.WeaponManagerTablet, 0, itemSpawnPos, Quaternion.Euler(itemRotation));
 
             Log.Debug($"Item pos: {itemSpawnPos}", Config.Debug);
