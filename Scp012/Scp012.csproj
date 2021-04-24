@@ -73,7 +73,7 @@
       <HintPath>..\packages\EXILED.2.10.0-beta\lib\net472\Exiled.Updater.dll</HintPath>
     </Reference>
     <Reference Include="GhostSpectator">
-      <HintPath>..\..\..\..\AppData\Roaming\EXILED\Plugins\GhostSpectator.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\GhostSpectator.dll</HintPath>
     </Reference>
     <Reference Include="Mirror, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -14,7 +14,7 @@
     {
         public static Scp012 Singleton;
         public override string Author => "Michal78900";
-        public override Version Version => new Version(2, 2, 0);
+        public override Version Version => new Version(2, 2, 1);
         public override Version RequiredExiledVersion => new Version(2, 10, 0);
 
         public static bool IsGS { get; private set; } = false;

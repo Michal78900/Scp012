@@ -9,6 +9,7 @@
     using Mirror;
 
     using Object = UnityEngine.Object;
+    using System.Linq;
 
     public partial class Handler
     {
@@ -167,6 +168,12 @@
                 }
 
                 ply.Kill(DamageTypes.Bleeding);
+
+                var scps = Player.Get(Team.SCP);
+                if (scps.Count(scp => scp.Role == RoleType.Scp079) > 0 && scps.Count() == 1)
+                {
+                    Recontainer079.BeginContainment(true);
+                }
 
                 scp012death = false;
                 Log.Debug($"Bool is {scp012death} (after killing)", Config.Debug);

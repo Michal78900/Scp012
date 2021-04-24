@@ -9,6 +9,7 @@
     using UnityEngine;
     using Interactables.Interobjects.DoorUtils;
     using Mirror;
+    using System.Linq;
 
     public partial class Handler
     {
@@ -163,7 +164,14 @@
                     string message = Config.CassieMessage;
                     message = message.Replace("{scp}", $"{RoleToString[ev.Role.roleId]}");
 
-                    Cassie.GlitchyMessage(message, 0.05f, 0.05f);
+                    Timing.CallDelayed(0.5f, () =>
+                    {
+                        var scps = Player.Get(Team.SCP);
+                        if (scps.Count(scp => scp.Role == RoleType.Scp079) > 0 && scps.Count() == 1)
+                            message += (" . . AllSecured . SCP 0 7 9 recontainment Sequence Commencing . Heavy containment zone over charge in t minus 1 minute");
+
+                        Cassie.GlitchyMessage(message, 0.05f, 0.05f);
+                    });
                 }
             }
         }
