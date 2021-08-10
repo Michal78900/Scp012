@@ -1,8 +1,9 @@
 ﻿namespace Scp012
 {
     using System;
+    using System.Linq;
+    using System.Reflection;
     using Exiled.API.Features;
-    using Exiled.API.Interfaces;
     using Exiled.Loader;
 
     using PlayerEvent = Exiled.Events.Handlers.Player;
@@ -14,10 +15,10 @@
     {
         public static Scp012 Singleton;
         public override string Author => "Michal78900";
-        public override Version Version => new Version(2, 2, 1);
+        public override Version Version => new Version(2, 3, 0);
         public override Version RequiredExiledVersion => new Version(2, 10, 0);
 
-        public static bool IsGS { get; private set; } = false;
+        public static Assembly GhostSpectator;
 
         private Handler handler;
 
@@ -38,15 +39,10 @@
 
             MapEvent.AnnouncingScpTermination += handler.OnAnnouncingScpTermination;
 
-            foreach (IPlugin<IConfig> plugin in Loader.Plugins)
-            {
-                if (plugin.Name == "GhostSpectator" && plugin.Config.IsEnabled)
-                {
-                    IsGS = true;
-                    Log.Debug("GhostSpectator plugin detected!", Config.Debug);
-                    break;
-                }
-            }
+            GhostSpectator = Loader.Plugins.FirstOrDefault(x => x.Name == "GhostSpectator")?.Assembly;
+
+            if (GhostSpectator != null)
+                Log.Debug("GhostSpectator plugin detected!", Config.Debug);
 
             base.OnEnabled();
         }

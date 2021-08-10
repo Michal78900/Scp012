@@ -1,6 +1,8 @@
 ﻿namespace Scp012
 {
     using System;
+    using System.Linq;
+    using System.Reflection;
     using Exiled.API.Features;
     using System.Collections.Generic;
     using MEC;
@@ -8,8 +10,9 @@
     using Interactables.Interobjects.DoorUtils;
     using Mirror;
 
+    using Random = UnityEngine.Random;
     using Object = UnityEngine.Object;
-    using System.Linq;
+    using Exiled.API.Enums;
 
     public partial class Handler
     {
@@ -21,38 +24,35 @@
 
                 try
                 {
-                    foreach (Player ply in Player.List)
+                    foreach (Player player in Player.List)
                     {
-                        if (!ply.IsAlive || ply.IsGodModeEnabled || (Config.IgnoredRoles.Contains(ply.Role))) continue;
+                        if (!player.IsAlive || player.IsGodModeEnabled || (Config.IgnoredRoles.Contains(player.Role))) continue;
 
-                        if (Scp012.IsGS)
-                        {
-                            if (IsGhost(ply))
-                                continue;
-                        }
+                        if (IsGhost(player))
+                            continue;
 
-                        float DistanceToScp012 = Vector3.Distance(Scp012Item.Networkposition, ply.Position);
+                        float DistanceToScp012 = Vector3.Distance(Scp012Item.Networkposition, player.Position);
 
                         if (DistanceToScp012 < Config.AffectDistance)
                         {
-                            foreach (string EffectName in Config.AffectEffects)
+                            foreach (EffectType effectType in Config.AffectEffects)
                             {
-                                ply.ReferenceHub.playerEffectsController.EnableByString(EffectName, 2f, false);
+                                player.EnableEffect(effectType, 2f, false);
                             }
                         }
 
                         if (DistanceToScp012 < Config.NoReturnDistance)
                         {
-                            foreach (string EffectName in Config.NoReturnEffects)
+                            foreach (EffectType effectType in Config.NoReturnEffects)
                             {
-                                ply.ReferenceHub.playerEffectsController.EnableByString(EffectName, 2f, false);
+                                player.EnableEffect(effectType, 2f, false);
                             }
 
-                            if (!PlayersInteracting.Contains(ply))
+                            if (!PlayersInteracting.Contains(player))
                             {
-                                PlayersInteracting.Add(ply);
+                                PlayersInteracting.Add(player);
 
-                                Timing.RunCoroutine(VoiceLines(ply));
+                                Timing.RunCoroutine(VoiceLines(player));
                             }
                         }
                     }
@@ -82,18 +82,15 @@
 
                 try
                 {
-                    foreach (Player ply in Player.List)
+                    foreach (Player player in Player.List)
                     {
-                        if (!ply.IsAlive || ply.IsGodModeEnabled || Config.IgnoredRoles.Contains(ply.Role)) continue;
+                        if (!player.IsAlive || player.IsGodModeEnabled || Config.IgnoredRoles.Contains(player.Role)) continue;
 
-                        if (Scp012.IsGS)
-                        {
-                            if (IsGhost(ply))
-                                continue;
-                        }
+                        if (IsGhost(player))
+                            continue;
 
-                        if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < Config.AffectDistance && Vector3.Distance(Scp012Item.Networkposition, ply.Position) > Config.NoReturnDistance - 0.1f)
-                            ply.Position = Vector3.MoveTowards(ply.Position, Scp012Item.Networkposition, Config.AttractionForce);
+                        if (Vector3.Distance(Scp012Item.Networkposition, player.Position) < Config.AffectDistance && Vector3.Distance(Scp012Item.Networkposition, player.Position) > Config.NoReturnDistance - 0.1f)
+                            player.Position = Vector3.MoveTowards(player.Position, Scp012Item.Networkposition, Config.AttractionForce);
                     }
                 }
                 catch (Exception)
@@ -103,71 +100,71 @@
             }
         }
 
-        private IEnumerator<float> VoiceLines(Player ply)
+        private IEnumerator<float> VoiceLines(Player player)
         {
             bool blood = Config.SpawnBlood;
 
-            ply.ShowHint(Config.Translations.IHaveTo);
+            player.ShowHint(Config.Translations.IHaveTo);
 
             yield return Timing.WaitForSeconds(5f);
 
             if (Config.DropItems)
             {
-                ply.DropItems();
+                player.DropItems();
             }
 
-            foreach (string EffectName in Config.DyingEffects)
+            foreach (EffectType effectType in Config.DyingEffects)
             {
-                ply.ReferenceHub.playerEffectsController.EnableByString(EffectName, 15f, false);
+                player.EnableEffect(effectType, 15f, false);
             }
 
-            if (rng.Next(0, 2) == 0) ply.ShowHint(Config.Translations.IDontThink);
+            if (Random.Range(0, 2) == 0) player.ShowHint(Config.Translations.IDontThink);
 
-            else ply.ShowHint(Config.Translations.IMust);
+            else player.ShowHint(Config.Translations.IMust);
 
-            if (blood) ply.ReferenceHub.characterClassManager.RpcPlaceBlood(ply.Position, 0, 1f);
-
-
-
-            yield return Timing.WaitForSeconds(5f);
-
-            if (rng.Next(0, 2) == 0) ply.ShowHint(Config.Translations.NoChoice);
-
-            else ply.ShowHint(Config.Translations.NoSense);
-
-            if (blood) ply.ReferenceHub.characterClassManager.RpcPlaceBlood(ply.Position, 0, 2f);
+            if (blood) player.ReferenceHub.characterClassManager.RpcPlaceBlood(player.Position, 0, 1f);
 
 
 
             yield return Timing.WaitForSeconds(5f);
 
-            if (rng.Next(0, 2) == 0) ply.ShowHint(Config.Translations.IsImpossible);
+            if (Random.Range(0, 2) == 0) player.ShowHint(Config.Translations.NoChoice);
 
-            else ply.ShowHint(Config.Translations.CantBeCompleted);
+            else player.ShowHint(Config.Translations.NoSense);
 
-            if (blood) ply.ReferenceHub.characterClassManager.RpcPlaceBlood(ply.Position, 0, 3f);
+            if (blood) player.ReferenceHub.characterClassManager.RpcPlaceBlood(player.Position, 0, 2f);
 
 
 
             yield return Timing.WaitForSeconds(5f);
 
-            PlayersInteracting.Remove(ply);
+            if (Random.Range(0, 2) == 0) player.ShowHint(Config.Translations.IsImpossible);
 
-            if (Vector3.Distance(Scp012Item.Networkposition, ply.Position) < 7.5f)
+            else player.ShowHint(Config.Translations.CantBeCompleted);
+
+            if (blood) player.ReferenceHub.characterClassManager.RpcPlaceBlood(player.Position, 0, 3f);
+
+
+
+            yield return Timing.WaitForSeconds(5f);
+
+            PlayersInteracting.Remove(player);
+
+            if (Vector3.Distance(Scp012Item.Networkposition, player.Position) < 7.5f)
             {
                 if (blood)
-                    ply.ReferenceHub.characterClassManager.RpcPlaceBlood(ply.Position, 0, 5f);
+                    player.ReferenceHub.characterClassManager.RpcPlaceBlood(player.Position, 0, 5f);
 
                 if (!Config.DropItems)
-                    ply.ClearInventory();
+                    player.ClearInventory();
 
-                if (ply.IsScp)
+                if (player.IsScp)
                 {
                     scp012death = true;
                     Log.Debug($"Bool is {scp012death} (before killing)", Config.Debug);
                 }
 
-                ply.Kill(DamageTypes.Bleeding);
+                player.Kill(DamageTypes.Bleeding);
 
                 var scps = Player.Get(Team.SCP);
                 if (scps.Count(scp => scp.Role == RoleType.Scp079) > 0 && scps.Count() == 1)
@@ -194,9 +191,14 @@
             }
         }
 
+        // Original code from the Scanner plugin made by Thunder
         private bool IsGhost(Player player)
         {
-            return GhostSpectator.API.IsGhost(player);
+            Assembly assembly = Scp012.GhostSpectator;
+            if (assembly == null)
+                return false;
+
+            return ((bool)assembly.GetType("GhostSpectator.API")?.GetMethod("IsGhost")?.Invoke(null, new object[] { player })) == true;
         }
     }
 }

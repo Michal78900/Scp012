@@ -1,7 +1,7 @@
 ﻿namespace Scp012
 {
+    using Exiled.API.Enums;
     using Exiled.API.Interfaces;
-    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
 
@@ -13,7 +13,6 @@
         [Description("Should debug messages be shown.")]
         public bool Debug { get; set; } = false;
 
-
         [Description("How strongly the SCP-012 will attract players to itself.")]
         public float AttractionForce { get; set; } = 0.1f;
 
@@ -24,39 +23,39 @@
         public bool SpawnBlood { get; set; } = true;
 
         [Description("List of effects given to player, when they are in AffectDistance to SCP-012:")]
-        public List<string> AffectEffects { get; set; } = new List<string>()
+        public List<EffectType> AffectEffects { get; set; } = new List<EffectType>()
         {
-            "Disabled",
+            EffectType.Disabled,
         };
 
         [Description("If distance between a player and SCP-012 is less than this number, the Bad Composition will start killing affected player.")]
         public float NoReturnDistance { get; set; } = 2.5f;
 
         [Description("List of effects given to player when they are in NoReturnDistance to SCP-012:")]
-        public List<string> NoReturnEffects { get; set; } = new List<string>()
+        public List<EffectType> NoReturnEffects { get; set; } = new List<EffectType>()
         {
-            "Ensnared",
+            EffectType.Ensnared,
         };
 
         [Description("List of effects given to player, when they begin to die because of SCP-012:")]
-        public List<string> DyingEffects { get; set; } = new List<string>()
+        public List<EffectType> DyingEffects { get; set; } = new List<EffectType>()
         {
-            "Bleeding",
+            EffectType.Bleeding,
         };
+
         [Description("Should damage-dealing effects hurt affected player.")]
         public bool EffectsDamage { get; set; } = false;
 
         [Description("List of items which may be spawned inside SCP-012 to bait player to come closer: (valid formating: - ItemType: chance)")]
-        public List<Dictionary<string, int>> BaitItems { get; set; } = new List<Dictionary<string, int>>
+        public List<Dictionary<ItemType, int>> BaitItems { get; set; } = new List<Dictionary<ItemType, int>>
         {
-            new Dictionary<string, int> { { "Medkit", 100 } },
+            new Dictionary<ItemType, int> { { ItemType.Medkit, 100 } },
         };
 
         [Description("Should bait items that are weapons or ammo be fully loaded.")]
         public bool LoadedBaitWeapons { get; set; } = true;
 
         [Description("List of roles, that will be ignored by SCP-012:")]
-
         public List<RoleType> IgnoredRoles { get; set; } = new List<RoleType>
         {
             RoleType.Scp173

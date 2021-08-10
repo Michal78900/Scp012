@@ -11,83 +11,43 @@
     using Mirror;
     using System.Linq;
 
+    using Random = UnityEngine.Random;
+
     public partial class Handler
     {
-        public static readonly Config Config = Scp012.Singleton.Config;
+        public static Pickup Scp012Item;
 
-        public List<CoroutineHandle> coroutines = new List<CoroutineHandle>();
-
-        public List<Player> PlayersInteracting = new List<Player>();
+        private Vector3 itemSpawnPos;
+        private Quaternion itemRotation;
+        private Vector3 baitItemSpawnPos;
 
         private DoorVariant Scp012BottomDoor;
-        private Vector3 doorPos;
 
-        private Pickup Scp012Item;
-        private Vector3 itemSpawnPos;
-        private Vector3 itemRotation;
+        private List<CoroutineHandle> coroutines = new List<CoroutineHandle>();
 
-        private Vector3 baitItemSpawnPos;
+        private List<Player> PlayersInteracting = new List<Player>();
 
         private bool scp012death = false;
 
-        private readonly System.Random rng = new System.Random();
-
         private readonly Dictionary<RoleType, string> RoleToString = new Dictionary<RoleType, string>
         {
-            {RoleType.Scp049, "SCP 0 4 9" },
-            {RoleType.Scp096, "SCP 0 9 6" },
-            {RoleType.Scp106, "SCP 1 0 6" },
-            {RoleType.Scp173, "SCP 1 7 3" },
-            {RoleType.Scp93953, "SCP 9 3 9" },
-            {RoleType.Scp93989, "SCP 9 3 9" }
+            { RoleType.Scp049, "SCP 0 4 9" },
+            { RoleType.Scp096, "SCP 0 9 6" },
+            { RoleType.Scp106, "SCP 1 0 6" },
+            { RoleType.Scp173, "SCP 1 7 3" },
+            { RoleType.Scp93953, "SCP 9 3 9" },
+            { RoleType.Scp93989, "SCP 9 3 9" },
         };
 
         internal void OnWaitingForPlayers()
         {
             Scp012BottomDoor = Map.GetDoorByName("012_BOTTOM");
-            doorPos = Scp012BottomDoor.transform.position;
 
-            Log.Debug($"Door rotation: {Scp012BottomDoor.transform.rotation}", Config.Debug);
-            Log.Debug($"Door position: {doorPos}", Config.Debug);
+            Log.Debug($"Door rotation: {Scp012BottomDoor.transform.eulerAngles}", Config.Debug);
 
-            switch (Scp012BottomDoor.transform.rotation.ToString())
-            {
-                case "(0.0, 1.0, 0.0, 0.0)":
-                    {
-                        itemSpawnPos = new Vector3(doorPos.x - 2.05f, doorPos.y + 0.8f, doorPos.z - 8.5f);
-                        itemRotation = new Vector3(-90f, -90f, 0f);
-
-                        baitItemSpawnPos = new Vector3(doorPos.x - 2f, doorPos.y + 1f, doorPos.z - 6.5f);
-                        break;
-                    }
-
-                case "(0.0, 0.0, 0.0, -1.0)":
-                    {
-                        itemSpawnPos = new Vector3(doorPos.x + 2.05f, doorPos.y + 0.8f, doorPos.z + 8.5f);
-                        itemRotation = new Vector3(-90f, 90f, 0f);
-
-                        baitItemSpawnPos = new Vector3(doorPos.x + 2f, doorPos.y + 1f, doorPos.z + 6.5f);
-                        break;
-                    }
-
-                case "(0.0, 0.7, 0.0, -0.7)":
-                    {
-                        itemSpawnPos = new Vector3(doorPos.x - 8.5f, doorPos.y + 0.8f, doorPos.z + 2.05f);
-                        itemRotation = new Vector3(-90f, 0f, 0);
-
-                        baitItemSpawnPos = new Vector3(doorPos.x - 6.5f, doorPos.y + 1f, doorPos.z + 2f);
-                        break;
-                    }
-
-                case "(0.0, 0.7, 0.0, 0.7)":
-                    {
-                        itemSpawnPos = new Vector3(doorPos.x + 8.5f, doorPos.y + 0.8f, doorPos.z - 2.05f);
-                        itemRotation = new Vector3(-90f, 0f, 180f);
-
-                        baitItemSpawnPos = new Vector3(doorPos.x + 6.5f, doorPos.y + 1f, doorPos.z - 2f);
-                        break;
-                    }
-            }
+            itemRotation = Quaternion.Euler(OffsetRotation(Scp012BottomDoor.transform, -90f, 90f, 0f));
+            itemSpawnPos = OffsetPosition(Scp012BottomDoor.transform, 8.5f, 0.5f, 1.75f);
+            baitItemSpawnPos = OffsetPosition(Scp012BottomDoor.transform, 6.5f, 1.8f, 1.75f);
 
             SpawnScp012Item();
         }
@@ -153,8 +113,6 @@
 
         internal void OnAnnouncingScpTermination(AnnouncingScpTerminationEventArgs ev)
         {
-            Log.Debug($"\nSCP died:\nReason: {ev.HitInfo.GetDamageName()}\nBool: {scp012death}", Config.Debug);
-
             if (scp012death && ev.HitInfo.GetDamageType() == DamageTypes.Bleeding)
             {
                 ev.IsAllowed = false;
@@ -168,7 +126,7 @@
                     {
                         var scps = Player.Get(Team.SCP);
                         if (scps.Count(scp => scp.Role == RoleType.Scp079) > 0 && scps.Count() == 1)
-                            message += (" . . AllSecured . SCP 0 7 9 recontainment Sequence Commencing . Heavy containment zone over charge in t minus 1 minute");
+                            message += (" . .  ALLSECURED . SCP 0 7 9 RECONTAINMENT SEQUENCE COMMENCING . FORCEOVERCHARGE");
 
                         Cassie.GlitchyMessage(message, 0.05f, 0.05f);
                     });
@@ -178,13 +136,13 @@
 
         internal void SpawnScp012Item()
         {
-            Scp012Item = Item.Spawn(ItemType.WeaponManagerTablet, 0, itemSpawnPos, Quaternion.Euler(itemRotation));
+            Scp012Item = Item.Spawn(ItemType.KeycardO5, 0, itemSpawnPos, itemRotation);
 
             Log.Debug($"Item pos: {itemSpawnPos}", Config.Debug);
 
             GameObject gameObject = Scp012Item.gameObject;
 
-            gameObject.transform.localScale = new Vector3(0.5f, 2.5f, 2.5f);
+            gameObject.transform.localScale = new Vector3(0.01f, 175f, 15f);
 
             var rigidbody = gameObject.GetComponent<Rigidbody>();
             rigidbody.isKinematic = false;
@@ -204,36 +162,32 @@
         {
             for (int i = 0; i < Config.BaitItems.Count; i++)
             {
-                foreach (KeyValuePair<string, int> baitItem in Config.BaitItems[i])
+                var baitItem = Config.BaitItems[i].First();
+
+                ItemType item = baitItem.Key;
+
+                float durability = 0;
+
+                if (Config.LoadedBaitWeapons)
+                    durability = item.GetDefaultDurability();
+
+                int chance = baitItem.Value;
+
+                if (Random.Range(0, 101) < chance)
                 {
-                    if (!Enum.TryParse(baitItem.Key, true, out ItemType item))
-                    {
-                        Log.Error($"\"{baitItem.Key}\" is not a valid ItemType name.");
-                        continue;
-                    }
-                    else
-                    {
-                        float durability = 0;
+                    Item.Spawn(item, durability, new Vector3(baitItemSpawnPos.x + Random.Range(-6.0f, 6.0f), baitItemSpawnPos.y, baitItemSpawnPos.z + Random.Range(-6.0f, 6f)), Random.rotation);
 
-                        if (Config.LoadedBaitWeapons)
-                            durability = item.GetDefaultDurability();
-
-                        int chance = baitItem.Value;
-
-                        if (rng.Next(0, 101) < chance)
-                        {
-                            Item.Spawn(item, durability, new Vector3(baitItemSpawnPos.x + UnityEngine.Random.Range(-6.0f, 6.0f), baitItemSpawnPos.y, baitItemSpawnPos.z + UnityEngine.Random.Range(-6.0f, 6f)), RandomRotaion());
-
-                            Log.Debug($"{item} bait item has been spawned inside of SCP-012 chamber!", Config.Debug);
-                        }
-                    }
+                    Log.Debug($"{item} bait item has been spawned inside of SCP-012 chamber!", Config.Debug);
                 }
             }
         }
 
-        private Quaternion RandomRotaion()
-        {
-            return Quaternion.Euler(UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f), UnityEngine.Random.Range(0f, 360f));
-        }
+        private Vector3 OffsetPosition(Transform location, float forward, float up, float right) =>
+            location.position + (location.forward * forward) + (location.up * up) + (location.right * right);
+
+        private Vector3 OffsetRotation(Transform location, float x, float y, float z) =>
+            location.eulerAngles + (Vector3.right * x) + (Vector3.up * y) + (Vector3.forward * z);
+
+        private static readonly Config Config = Scp012.Singleton.Config;
     }
 }
