@@ -111,7 +111,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Translations.cs" />
+    <Compile Include="Translation.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Handler.cs" />
     <Compile Include="Logic.cs" />

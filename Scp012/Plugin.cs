@@ -11,12 +11,9 @@
     using MapEvent = Exiled.Events.Handlers.Map;
     using Scp079Event = Exiled.Events.Handlers.Scp079;
 
-    public class Scp012 : Plugin<Config>
+    public class Scp012 : Plugin<Config, Translation>
     {
         public static Scp012 Singleton;
-        public override string Author => "Michal78900";
-        public override Version Version => new Version(2, 3, 0);
-        public override Version RequiredExiledVersion => new Version(2, 10, 0);
 
         public static Assembly GhostSpectator;
 
@@ -65,5 +62,10 @@
 
             base.OnDisabled();
         }
+
+        public override string Name => "Scp012";
+        public override string Author => "Michal78900";
+        public override Version Version => new Version(2, 3, 0);
+        public override Version RequiredExiledVersion => new Version(2, 10, 0);
     }
 }

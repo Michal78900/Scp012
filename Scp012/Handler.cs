@@ -137,22 +137,17 @@
         internal void SpawnScp012Item()
         {
             Scp012Item = Item.Spawn(ItemType.KeycardO5, 0, itemSpawnPos, itemRotation);
+            GameObject gameObject = Scp012Item.gameObject;
 
             Log.Debug($"Item pos: {itemSpawnPos}", Config.Debug);
 
-            GameObject gameObject = Scp012Item.gameObject;
+            NetworkServer.UnSpawn(gameObject);
 
             gameObject.transform.localScale = new Vector3(0.01f, 175f, 15f);
 
             var rigidbody = gameObject.GetComponent<Rigidbody>();
-            rigidbody.isKinematic = false;
-            rigidbody.useGravity = false;
-            rigidbody.velocity = Vector3.zero;
-            rigidbody.angularVelocity = Vector3.zero;
-            rigidbody.freezeRotation = true;
-            rigidbody.mass = 100000;
+            rigidbody.isKinematic = true;
 
-            NetworkServer.UnSpawn(gameObject);
             NetworkServer.Spawn(gameObject);
 
             Log.Debug("SCP-012 item spawned successfully!", Config.Debug);
@@ -188,6 +183,7 @@
         private Vector3 OffsetRotation(Transform location, float x, float y, float z) =>
             location.eulerAngles + (Vector3.right * x) + (Vector3.up * y) + (Vector3.forward * z);
 
+        private static readonly Translation Translation = Scp012.Singleton.Translation;
         private static readonly Config Config = Scp012.Singleton.Config;
     }
 }

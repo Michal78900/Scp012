@@ -104,7 +104,7 @@
         {
             bool blood = Config.SpawnBlood;
 
-            player.ShowHint(Config.Translations.IHaveTo);
+            player.ShowHint(Translation.IHaveTo);
 
             yield return Timing.WaitForSeconds(5f);
 
@@ -118,9 +118,9 @@
                 player.EnableEffect(effectType, 15f, false);
             }
 
-            if (Random.Range(0, 2) == 0) player.ShowHint(Config.Translations.IDontThink);
+            if (Random.Range(0, 2) == 0) player.ShowHint(Translation.IDontThink);
 
-            else player.ShowHint(Config.Translations.IMust);
+            else player.ShowHint(Translation.IMust);
 
             if (blood) player.ReferenceHub.characterClassManager.RpcPlaceBlood(player.Position, 0, 1f);
 
@@ -128,9 +128,9 @@
 
             yield return Timing.WaitForSeconds(5f);
 
-            if (Random.Range(0, 2) == 0) player.ShowHint(Config.Translations.NoChoice);
+            if (Random.Range(0, 2) == 0) player.ShowHint(Translation.NoChoice);
 
-            else player.ShowHint(Config.Translations.NoSense);
+            else player.ShowHint(Translation.NoSense);
 
             if (blood) player.ReferenceHub.characterClassManager.RpcPlaceBlood(player.Position, 0, 2f);
 
@@ -138,9 +138,9 @@
 
             yield return Timing.WaitForSeconds(5f);
 
-            if (Random.Range(0, 2) == 0) player.ShowHint(Config.Translations.IsImpossible);
+            if (Random.Range(0, 2) == 0) player.ShowHint(Translation.IsImpossible);
 
-            else player.ShowHint(Config.Translations.CantBeCompleted);
+            else player.ShowHint(Translation.CantBeCompleted);
 
             if (blood) player.ReferenceHub.characterClassManager.RpcPlaceBlood(player.Position, 0, 3f);
 

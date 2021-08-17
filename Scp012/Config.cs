@@ -75,8 +75,5 @@
 
         [Description("Should 012_BOTTOM door lock, when someone interacts with SCP-012.")]
         public bool AutoLockDoor { get; set; } = true;
-
-        [Description("Texts shown to player that is interacting with SCP-012. Default lines are taken from SCP:CB wiki:")]
-        public Translations Translations { get; set; } = new Translations();
     }
 }
